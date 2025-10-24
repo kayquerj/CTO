@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{{ PRODUCT_NAME }}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #0d1117;
+        color: #f0f6fc;
+        font-family: "Segoe UI", Roboto, sans-serif;
+      }
+      #unity-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #unity-canvas {
+        width: 100%;
+        height: 100%;
+        max-width: 960px;
+        max-height: 600px;
+        background: #000;
+      }
+      @media (max-width: 600px) {
+        #unity-canvas {
+          max-width: none;
+          max-height: none;
+        }
+      }
+      #loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background: rgba(13, 17, 23, 0.9);
+      }
+      #loading.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .logo {
+        font-size: 1.25rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .progress {
+        width: min(320px, 60vw);
+        height: 6px;
+        background: rgba(240, 246, 252, 0.12);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, #58a6ff, #f778ba);
+        transition: width 0.2s ease;
+      }
+      #status {
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container">
+      <canvas id="unity-canvas" tabindex="0"></canvas>
+      <div id="loading">
+        <div class="logo">{{{ PRODUCT_NAME }}}</div>
+        <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+        <div id="status">Carregando assets...</div>
+      </div>
+    </div>
+
+    <script src="{{{ UNITY_WEBGL_LOADER_URL }}}"></script>
+    <script>
+      const canvas = document.getElementById("unity-canvas");
+      const loading = document.getElementById("loading");
+      const bar = document.getElementById("progress-bar");
+      const statusLabel = document.getElementById("status");
+
+      function setResponsiveSize() {
+        const ratio = 16 / 9;
+        const maxWidth = window.innerWidth;
+        const maxHeight = window.innerHeight;
+        let width = maxWidth;
+        let height = Math.floor(width / ratio);
+        if (height > maxHeight) {
+          height = maxHeight;
+          width = Math.floor(height * ratio);
+        }
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+      }
+
+      window.addEventListener("resize", setResponsiveSize);
+      setResponsiveSize();
+
+      createUnityInstance(
+        canvas,
+        {
+          dataUrl: "{{{ UNITY_WEBGL_DATA_URL }}}",
+          frameworkUrl: "{{{ UNITY_WEBGL_FRAMEWORK_URL }}}",
+          codeUrl: "{{{ UNITY_WEBGL_CODE_URL }}}",
+          streamingAssetsUrl: "StreamingAssets",
+          companyName: "{{{ COMPANY_NAME }}}",
+          productName: "{{{ PRODUCT_NAME }}}",
+          productVersion: "{{{ PRODUCT_VERSION }}}",
+        },
+        (progress) => {
+          bar.style.width = `${progress * 100}%`;
+          statusLabel.textContent = `Carregando ${(progress * 100).toFixed(0)}%`;
+        }
+      )
+        .then(() => {
+          loading.classList.add("hidden");
+        })
+        .catch((error) => {
+          statusLabel.textContent = "Erro ao inicializar o jogo";
+          console.error(error);
+        });
+    </script>
+  </body>
+</html>

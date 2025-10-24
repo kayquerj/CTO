@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!129 &1
+PlayerSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 24
+  productGUID: 4b5361057cf8946b69d76f7d5218cb01
+  companyName: CTO.New
+  productName: Unity WebGL Game
+  bundleVersion: 0.1.0
+  defaultScreenWidth: 1280
+  defaultScreenHeight: 720
+  defaultWebScreenWidth: 1280
+  defaultWebScreenHeight: 720
+  runInBackground: 1
+  resizableWindow: 1
+  visibleInBackground: 1
+  allowFullscreenSwitch: 1
+  fullscreenMode: 1
+  androidStartInFullscreen: 1
+  usePlayerLog: 1
+  WebGLTemplate: "PROJECT:Minimal"
+  WebGLCompressionFormat: 2
+  WebGLLinkerTarget: 2
+  WebGLDebugSymbols: 0
+  WebGLDataCaching: 1
+  WebGLThreadsSupport: 0
+  WebGLWasmStreaming: 1
+  WebGLUseEmbeddedResources: 1
+  WebGLMemorySize: 256
+  scriptingRuntimeVersion: 1
+  managedStrippingLevel: 0
+  gcIncremental: 1
+  m_SupportedAspectRatios:
+    4:3: 1
+    5:4: 0
+    16:10: 1
+    16:9: 1
+    Others: 1
+  applicationIdentifier:
+    Standalone: com.ctonew.webgl
+    WebGL: com.ctonew.webgl
+  buildNumber:
+    Standalone: 0
+    WebGL: 0
