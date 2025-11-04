@@ -1,0 +1,76 @@
+name: Build WebGL and Deploy Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: webgl-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: true
+      - name: Ensure clean workspace
+        run: |
+          git reset --hard
+          git clean -fdx
+      - name: Build WebGL
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        with:
+          unityVersion: 2022.3.37f1
+          targetPlatform: WebGL
+          buildName: webgl
+          buildsPath: build
+          versioning: None
+      - name: Normalize build output
+        run: |
+          if [ -d build/webgl ]; then
+            rm -rf build/WebGL
+            mv build/webgl build/WebGL
+          elif [ -d build/WebGL/webgl ]; then
+            rm -rf build/WebGL
+            mv build/WebGL/webgl build/WebGL
+          fi
+          if [ ! -d build/WebGL ]; then
+            echo "Expected WebGL build in build/WebGL" >&2
+            exit 1
+          fi
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/WebGL
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
